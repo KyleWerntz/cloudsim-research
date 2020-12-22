@@ -118,13 +118,9 @@ public class Driver {
 		
 		try	{
 			scnr = new Scanner(txt);
-			
-			for(int i = 0; i < etc.length; i++)	{
-				for(int j = 0; j < etc[i].length; j++)	{
+			for(int i = 0; i < etc.length; i++)
+				for(int j = 0; j < etc[i].length; j++)
 					etc[i][j] = scnr.nextDouble();
-				}
-			}
-			
 			scnr.close();
 		} catch(FileNotFoundException e)	{
 			System.out.println("file not found");
