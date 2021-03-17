@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,13 +17,58 @@ public class test {
 	private static double[][] etc;
 	public static void main(String[] args) {
 		
-		LocalDateTime time = LocalDateTime.now();
-		DateTimeFormatter formattedTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-		System.out.println("data obtained at " + time.format(formattedTime));
+//		LocalDateTime time = LocalDateTime.now();
+//		DateTimeFormatter formattedTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+//		System.out.println("data obtained at " + time.format(formattedTime));
+		
+		String dbType = "LoLo_ETC";
+		String filebase = "txt-files/" + dbType + "/etc" + dbType;
+		String filename = "";
+		File f;
+		
+		double[][] etc;
+		FileWriter print;
+		String fileContents = "";
+		for (int i = 1; i < 50; i++)	{
+			int x = i+1;
+			filename = filebase + x + ".txt";
+			System.out.println(filename);
+			f = new File(filename);
+			etc = Helpers.getETC(f, 1024, 9);
+			try {
+				print = new FileWriter(filename, false);
+				fileContents = "";
+				for (int j = 0; j < etc.length; j++)	{
+					for (int k = 1; k < etc[j].length; k++)	{
+						print.append(etc[j][k] + "\t");
+					}
+					print.append("\n");
+				}
+				print.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				System.out.println("here...");
+				e.printStackTrace();
+			}
+		}
+		System.out.println("done!");
 		
 		
+//		System.out.println("hi?");
+//		for (int i = 0; i < 50; i++)	{
+//			filename = "txt-files/LoLo_ETC/etc_LOLO." + i;
+//			f = new File(filename);
+//			String newName = "txt-files/LoLo_ETC/etcLoLo_ETC" + (i+1) + ".txt";
+//			f.renameTo(new File(newName));
+//		}
+//		System.out.println("done!");
 		
 	}
+	
+	
+	
+	
+	
 	
 	private static String getOG()	{
 		return "txt-files/ETC_HIHI100/etc_HIHI100.";

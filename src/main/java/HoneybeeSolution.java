@@ -30,6 +30,8 @@ public class HoneybeeSolution extends Solution {
 		double ogFitness = queen.getFitness();
 		double bestFitness = queen.getFitness();
 		boolean keepRunning = true;
+		long end = System.currentTimeMillis() + (120*1000); // 2 min
+//		while (System.currentTimeMillis() < end)	{
 		while (keepRunning)	{
 			
 			beta = Math.random();

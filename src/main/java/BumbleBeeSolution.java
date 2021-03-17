@@ -15,60 +15,45 @@ public class BumbleBeeSolution extends Solution {
 		this.droneImprovementOption = droneImprovementOption;
 	}
 
-	/*
-	 * Load balancing is especially good in HI vm heterogeneity
-	 * Average value with HIHI no minmin VND VND is 3350
-	 * Changing stopping criteria to 1k iterations improves it to 3k
-	 * Chaning stopping criteria to less than .1% improvement improves solution to 3100
-	 * Doubling crossover improves solution to 3250
-	 * Doubling population improves solution to 3300
-	 * Doubling # of drones does not improve solution
-	 * Doubling # of queens improves solution to 3250
-	 * Doubling spermatheca size improves solution to 3300
-	 * Changing drone by queen to .2 and by worker to .8 does not improve solution
-	 * Changing drone by queen to .6 and worker to .4 does not improve solution
-	 * 
-	 */
 	public void runDataSet(int pop, boolean minmin) {
-			ExecutionTimeMeasurer.start("bumble");
-			
-			int maxQueens = 5;
-			int maxDrones = 100;
-			int spermathecaSize = 10;
-			double droneByQueen = 0.4 * maxDrones;
-			double droneByWorker = 0.6 * maxDrones;
-			
-			// Initalization
-			List<Chromosome> population = new ArrayList<Chromosome>();
-			for (int i = 0; i < pop; i++)	{
-				population.add(new Chromosome(getETC()));
-//				totalGenerated++;
-			}
-			Collections.sort(population);
-			
-			List<Queen> queens = new ArrayList<Queen>();
-			List<Chromosome> workers = new ArrayList<Chromosome>();
-			List<Chromosome> drones = new ArrayList<Chromosome>();
-			
-			if (minmin)
-				queens.add(new Queen(getETC(), Helpers.minmin(getETC())));
-			else
-				queens.add(new Queen(getETC(), population.get(0).getCopyOfGenes()));
-			
-//			System.out.println("starting solution=" + queens.get(0).getFitness());
+		ExecutionTimeMeasurer.start("bumble");
+		
+		int maxQueens = 10;
+		int maxDrones = 100;
+		int spermathecaSize = 10;
+		double droneByQueen = 0.4 * maxDrones;
+		double droneByWorker = 0.6 * maxDrones;
+		
+		// Initalization
+		List<Chromosome> population = new ArrayList<Chromosome>();
+		List<Queen> queens = new ArrayList<Queen>();
+		List<Chromosome> workers = new ArrayList<Chromosome>();
+		List<Chromosome> drones = new ArrayList<Chromosome>();
+		for (int i = 0; i < pop; i++)	{
+			population.add(new Chromosome(getETC()));
+		}
+		Collections.sort(population);
+		if (minmin)
+			queens.add(new Queen(getETC(), Helpers.minmin(getETC())));
+		else	{
+			queens.add(new Queen(getETC(), population.get(0).getCopyOfGenes()));
 			population.remove(0);
-			for (int i = 0; i < spermathecaSize; i++)	{
-				queens.get(0).addToSpermatheca(population.get(i));
-			}
-			population.clear();
-			double startFit = queens.get(0).getFitness();
-			
-			int iter = 0;
-			Queen bestOldQueen = queens.get(0);
-			double ogFitness = bestOldQueen.getFitness();
-			boolean keepRunning = true;
-			while (keepRunning)	{
-				ExecutionTimeMeasurer.start("one_run");
+		}
+		
+		for (int i = 0; i < spermathecaSize; i++)	{
+			queens.get(0).addToSpermatheca(population.get(i));
+		}
+		
+		population.clear();
+		double startFit = queens.get(0).getFitness();
+		int iter = 0;
+		Queen bestOldQueen = queens.get(0);
+		double ogFitness = bestOldQueen.getFitness();
+		boolean keepRunning = true;
+		long end = System.currentTimeMillis() + (120*1000); // 2 min
+//		while (System.currentTimeMillis() < end)	{
+		while (keepRunning)	{
+			ExecutionTimeMeasurer.start("one_run");
 				
 			// crossover
 			int queen = 0;
@@ -174,6 +159,11 @@ public class BumbleBeeSolution extends Solution {
 		}
 	
 		bestOldQueen.calculateLoad();
+		List<Double> loads = bestOldQueen.getCopyOfLoad();
+		for (double d : loads)	{
+			System.out.print(d + "\t");
+		}
+		System.out.println();
 //		bestOldQueen.printFitnessStats();
 		double endFit = bestOldQueen.getFitness();
 		this.addImprovement(startFit, endFit);
@@ -190,11 +180,11 @@ public class BumbleBeeSolution extends Solution {
 		return dist;
 	}
 	
-	private static List<Queen> alg3 (List<Queen> queens, List<Chromosome> drones, int maxMates)	{
+	private static List<Queen> alg3 (List<Queen> queens, List<Chromosome> drones, int spermathecaSize)	{
 		
 		boolean even = false;
 		int i = 0;
-		while (i < drones.size() && queens.get(0).getCopyOfSpermatheca().size() < maxMates)	{
+		while (i < drones.size() && queens.get(0).getCopyOfSpermatheca().size() < spermathecaSize)	{
 			if (!even)	{
 				for (int j = 0; j < queens.size(); j++) {
 					queens.get(j).addToSpermatheca(drones.get(i));
@@ -271,9 +261,8 @@ public class BumbleBeeSolution extends Solution {
 				while (!swapped && j < scurrGenes.size())	{
 					if (j != pos && scurrGenes.get(j) != stGenes.get(j))	{
 						if (scurrGenes.get(j) == tMachine)	{
-							scurrGenes.set(j, currMachine);
-							scurrGenes.set(pos, tMachine);
-							scurr.setGenes(scurrGenes);
+							scurr.updateLoad(j, currMachine);
+							scurr.updateLoad(pos, tMachine);
 							swapped = true;
 						}
 					}

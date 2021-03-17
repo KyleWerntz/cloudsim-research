@@ -15,6 +15,10 @@ public class Chromosome	implements Comparable<Chromosome>{
 		private double avgProcessTime;
 		private double[][] etc;
 		
+		/**
+		 * Creates a chromosome solution with random initial genes
+		 * @param etc the etc to be used
+		 */
 		public Chromosome(double[][] etc)	{
 			this.etc = etc;
 			this.cloudlets = etc.length;
@@ -24,6 +28,11 @@ public class Chromosome	implements Comparable<Chromosome>{
 			generateGenes();
 		}
 		
+		/**
+		 * Creates a chromosome with given genes
+		 * @param etc the etc to be used
+		 * @param genes the initial genes of this chromosome
+		 */
 		public Chromosome(double[][] etc, List<Integer> genes)	{
 			this.etc = etc;
 			this.cloudlets = etc.length;
@@ -32,6 +41,10 @@ public class Chromosome	implements Comparable<Chromosome>{
 			setGenes(genes);
 		}
 		
+		/**
+		 * Creates a new deep copy of an existing chromosome
+		 * @param chrom the existing chromosome to be deep copied
+		 */
 		public Chromosome(Chromosome chrom)	{
 			this.etc = chrom.etc;
 			this.cloudlets = etc.length;
@@ -40,26 +53,47 @@ public class Chromosome	implements Comparable<Chromosome>{
 			calculateProcessTime();
 		}
 		
+		/**
+		 * @return the ETC
+		 */
 		public double[][] getETC()	{
 			return etc;
 		}
 		
+		/**
+		 * returns a shallow copy of the genes. DO NOT MODIFY THIS OBJECT OR PASS IT TO OTHERS
+		 * @return a shallow copy of the genes
+		 */
 		public List<Integer> getGenesForComparisonOnly()	{
 			return genes;
 		}
 		
+		/**
+		 * returns a shallow copy of the load. DO NOT MODIFY THIS OBJECT OR PASS IT TO OTHERS
+		 * @return a shallow copy of the load
+		 */
 		public List<Double> getLoadForComparisonOnly()	{
 			return load;
 		}
 		
+		/**
+		 * @return the number of cloudlets
+		 */
 		public int getNumCloudlets()	{
 			return cloudlets;
 		}
 		
+		/**
+		 * @return the number of vms
+		 */
 		public int getNumVMs()	{
 			return vms;
 		}
 		
+		/**
+		 * returns a deep copy of the genes to be modified
+		 * @return a deep copy of the genes
+		 */
 		public List<Integer> getCopyOfGenes()	{
 			List<Integer> genesCopy = new ArrayList<Integer>();
 			for (Integer i : genes)
@@ -67,6 +101,10 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return genesCopy;
 		}
 		
+		/**
+		 * returns a deep copy of the load to be modified
+		 * @return a deep copy of the load
+		 */
 		public List<Double> getCopyOfLoad()	{
 			List<Double> loadCopy = new ArrayList<Double>();
 			for (Double d : load)
@@ -74,18 +112,34 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return loadCopy;
 		}
 		
+		/**
+		 * @return the average process time
+		 */
 		public double getAverageProcessTime()	{
 			return avgProcessTime;
 		}
 		
+		/**
+		 * @return the fitness (makespan) of the solution
+		 */
 		public double getFitness()	{
 			return fitness;
 		}
 		
+		/**
+		 * @return the area of the solution
+		 */
 		public double getArea()	{
 			return area;
 		}
-		
+		 
+		/**
+		 * Checks if a vm is overloaded or underloaded on this solution.
+		 * A vm is overloaded if its load is greater than average process time.
+		 * A vm is underloaded if its load is less than the avearge process time.
+		 * @param vm the vm being checked
+		 * @return -1 if overloaded, 1 if underloaded, 0 if balanced
+		 */
 		public int getVMStatus(int vm)	{
 			double vmLoad = load.get(vm);
 			if (vmLoad > avgProcessTime)
@@ -95,6 +149,10 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return 0;
 		}
 		
+		/**
+		 * gets a queue of all vms that are underloaded for balancing
+		 * @return a queue of all underloaded vms
+		 */
 		public Queue<Integer> getUnderLoads()	{
 			Queue<Integer> underloads = new LinkedList<>();
 			for (int i = 0; i < load.size(); i++) {
@@ -106,29 +164,54 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return underloads;
 		}
 		
+		/**
+		 * gets a single gene, the vm that this cloudlet is tied to
+		 * @param i the cloudlet being checked
+		 * @return the vm the cloudlet is tied to
+		 */
 		public double getGenesAt(int i)	{
 			return genes.get(i);
 		}
 		
+		/**
+		 * gets the load of a single vm
+		 * @param i the vm being checked
+		 * @return the load of the specific vm
+		 */
 		public double getLoadAt(int i)	{
 			return load.get(i);
 		}
 		
+		/**
+		 * sets the area of the solution
+		 * @param area the area of the solution
+		 */
 		public void setArea(double area)	{
 			this.area = area;
 		}
 		
+		/**
+		 * sets a new solution for the solution
+		 * @param genes the new solution
+		 */
 		public void setGenes(List<Integer> genes)	{
 			this.genes = genes;
 			calculateLoad();
 		}
 		
-		public void copyChromosome(Chromosome copy)	{
-			genes = copy.getCopyOfGenes();
-			load = copy.getCopyOfLoad();
-			fitness = copy.getFitness();
+		/**
+		 * Creates a deep copy of a chromosome's solution
+		 * @param copy the chromosome being copied
+		 */
+		public void copyChromosome(Chromosome chrom)	{
+			genes = chrom.getCopyOfGenes();
+			load = chrom.getCopyOfLoad();
+			fitness = chrom.getFitness();
 		}
 		
+		/**
+		 * replaces the current solution with a random one
+		 */
 		public void generateGenes()	{
 			genes.clear();
 			for (int i = 0; i < cloudlets; i++)	{
@@ -137,6 +220,10 @@ public class Chromosome	implements Comparable<Chromosome>{
 			calculateLoad();
 		}
 		
+		/**
+		 * finds the location of the heaviest vm
+		 * @return the location of the heaviest vm
+		 */
 		public int getLargestLoadLoc()	{
 			int largestLoadLoc = 0;
 			double loadSize = load.get(0);
@@ -149,6 +236,11 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return largestLoadLoc;
 		}
 		
+		/**
+		 * finds the average task length on a specific vm
+		 * @param loc the vm being checked
+		 * @return the average task length of the vm
+		 */
 		public double getAverageTaskLengthAt(int loc)	{
 			double d = 0;
 			double count = 0;
@@ -162,6 +254,9 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return d/count;
 		}
 		
+		/**
+		 * prints useful stats regarding this solution like genes, load, and fitness
+		 */
 		public void printStats()	{
 			String genes = "";
 			String load = "";
@@ -176,7 +271,10 @@ public class Chromosome	implements Comparable<Chromosome>{
 			System.out.println("load: " + load);
 			System.out.println("fitness: " + this.fitness + "\n");
 		}
-		
+		 
+		/**
+		 * prints useful stats regarding the fitness of the solution
+		 */
 		public void printFitnessStats()	{
 			int loc = getLargestLoadLoc();
 			int k = 0;
@@ -196,6 +294,9 @@ public class Chromosome	implements Comparable<Chromosome>{
 		}
 		
 		@Override
+		/**
+		 * chromosome objects are compared using their solution. lower fitness is desireable
+		 */
 		public int compareTo(Chromosome other)	{
 			if (fitness > other.getFitness())
 				return 1;
@@ -204,6 +305,11 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return 0;
 		}
 		
+		/**
+		 * updates the load when swapping genes, which is faster than recaculating the load every time
+		 * @param taskID the task being swapped
+		 * @param newVM the new vm it is being swapped to
+		 */
 		public void updateLoad(int taskID, int newVM)	{
 			int oldVM = genes.get(taskID);
 			genes.set(taskID, newVM);
@@ -215,6 +321,11 @@ public class Chromosome	implements Comparable<Chromosome>{
 			calculateProcessTime();
 		}
 		
+		/**
+		 * returns a list of ids of cloudlets on a certain vm
+		 * @param vm the vm being checked
+		 * @return a list of cloudlet ids pertaining to the cloudlets on the vm
+		 */
 		public List<Integer> getTasksOnVMByTime(int vm)	{
 			List<SortHelp> sort = new ArrayList<SortHelp>();
 			List<Integer> tasks = new ArrayList<Integer>();
@@ -230,6 +341,9 @@ public class Chromosome	implements Comparable<Chromosome>{
 			return tasks;
 		}
 		
+		/**
+		 * calculates load, then prints it
+		 */
 		public void calcAndPrintLoad()	{
 			calculateLoad();
 
@@ -238,17 +352,8 @@ public class Chromosome	implements Comparable<Chromosome>{
 				System.out.print((int)d + " ");
 		}
 		
-		/*
-		 * old version; //			load.clear();
-//			double totalExec;
-//			
-//			for (int k = 0; k < vms; k++)	{
-//				totalExec = 0;
-//				for (int i = 0; i < cloudlets; i++)	{
-//					totalExec += etc[i][k] * decide(i, k);
-//				}
-//				load.add(totalExec);
-//			}
+		/**
+		 * recalculates the load of each vm
 		 */
 		public void calculateLoad()	{
 			if (load.size() > 0)
@@ -268,6 +373,9 @@ public class Chromosome	implements Comparable<Chromosome>{
 			calculateProcessTime();
 		}
 		
+		/**
+		 * calculates the average process time, or the average of all the loads
+		 */
 		public void calculateProcessTime()	{
 			avgProcessTime = 0;
 			for (double d : load)	{
@@ -276,17 +384,14 @@ public class Chromosome	implements Comparable<Chromosome>{
 			avgProcessTime /= load.size();
 		}
 		
+		/**
+		 * calculates the fitness of the solution, which is the largest makespan
+		 */
 		public void calculateFitness()	{
 			fitness = 0;
 			for (double d : load)	{
 				fitness = Math.max(fitness, d);
 			}
 		}
-		
-//		private Integer decide(int taskID, int VMID)	{
-//			if (genes.get(taskID) == VMID)
-//				return 1;
-//			return 0;
-//		}
 		
 	}

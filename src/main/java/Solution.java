@@ -106,7 +106,7 @@ public abstract class Solution {
 		result += "\n" + getAverageTime();
 		result += "\n" + getLowerLimit();
 		result += "\n" + getUpperLimit();
-		result += "\n" + getPercentChange() + "\n";
+		result += "\n" + getPercentChange() + "% improvement\n";
 		
 		clearData();
 		return result;

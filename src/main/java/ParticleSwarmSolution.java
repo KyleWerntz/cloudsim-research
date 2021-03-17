@@ -14,8 +14,8 @@ public class ParticleSwarmSolution extends Solution {
 	public void runDataSet(int pop, boolean minmin) {
 		ExecutionTimeMeasurer.start("particle");
 		List<Particle> population = new ArrayList<Particle>();
-		double c1 = 1;
-		double c2 = 100;
+		double c1 = 2;
+		double c2 = 2;
 		double w = 0.65;
 		
 		for (int i = 0; i < pop; i++)	{
@@ -31,8 +31,9 @@ public class ParticleSwarmSolution extends Solution {
 		}
 		
 		int iter = 0;
-		while (iter < maxIter)	{
-			
+		long end = System.currentTimeMillis() + (120*1000); // 2 min
+		while (System.currentTimeMillis() < end)	{
+//		while (iter < maxIter)	{
 			for (Particle p : population)	{
 				p.updateVelocity(w, c1, c2);
 				p.updatePosition();
@@ -43,25 +44,26 @@ public class ParticleSwarmSolution extends Solution {
 			for (Particle p : population)	{
 				p.setGBest(gBest);
 			}
-			
+
 			iter++;
 		}
 		
-		population.get(0).calculateFitness();
 		double endFit = population.get(0).getFitness();
 		this.addImprovement(startFit, endFit);
-		this.addRun(population.get(0).getFitness(), ExecutionTimeMeasurer.end("particle"));
+		this.addRun(endFit, ExecutionTimeMeasurer.end("particle"));
 	}
 	
 	private int[][] minmin()	{
 		int[][] gene = new int[getETC().length][getETC()[0].length]; 
+		double[][] etc = getETC();
 		double min;
 		int jMin = 0;
 		for (int i = 0; i < gene.length; i++) {
-			min = getETC()[i][0];
+			min = etc[i][0];
+			jMin = 0;
 			for (int j = 0; j < gene[i].length; j++) {
-				if (getETC()[i][j] < min)	{
-					min = getETC()[i][j];
+				if (etc[i][j] < min)	{
+					min = etc[i][j];
 					jMin = j;
 				}
 			}

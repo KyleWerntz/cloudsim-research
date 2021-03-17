@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-
-import org.apache.commons.math3.distribution.GammaDistribution;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 
 public class Helpers {
 	public static List<Integer> minmin(double[][] etc)	{
@@ -24,17 +26,34 @@ public class Helpers {
 		return gene;
 	}
 	
+	public static double[][] getETC(File txt, int cloudlets, int vms)	{
+		Scanner scnr;
+		double[][] etc = new double[cloudlets][vms];
+		
+		try	{
+			scnr = new Scanner(txt);
+			for(int i = 0; i < etc.length; i++)
+				for(int j = 0; j < etc[i].length; j++)
+					etc[i][j] = scnr.nextDouble();
+			scnr.close();
+		} catch(FileNotFoundException e)	{
+			System.out.println("file not found");
+			e.printStackTrace();
+		}
+		return etc;
+	}
+	
 	public static Chromosome VND(Chromosome chrom)	{
 		int u = 1;
 		Chromosome ret = new Chromosome(chrom);
 		Chromosome temp = new Chromosome(chrom);
-		
+		int heaviestLoadLoc, currVM, newVM;
+		boolean swapToCurrVM, swapToNewVM;
 
 		while (u <= 2)	{
-			int heaviestLoadLoc = temp.getLargestLoadLoc();
+			heaviestLoadLoc = temp.getLargestLoadLoc();
 			List<Integer> genes = temp.getCopyOfGenes();
-			int currVM = heaviestLoadLoc;
-			int newVM;
+			currVM = heaviestLoadLoc;
 			do	{
 				newVM = (int)(Math.random() * chrom.getNumVMs());
 			} while (newVM == currVM);
@@ -46,28 +65,24 @@ public class Helpers {
 						genes.set(k, newVM);
 						temp.setGenes(genes);
 						k = genes.size();
-						newVM = (int)(Math.random() * chrom.getNumVMs());
 					}
 				}
 			} else if (u == 2)	{
 				//swap heaviest task of heaviest load with a task of a different VM
-				do	{
-					newVM = (int)(Math.random() * chrom.getNumVMs());
-				} while (newVM == currVM);
-				boolean swapCurrVM = false;
-				boolean swapNewVM = false;
+				swapToCurrVM = false;
+				swapToNewVM = false;
 				for (int k = genes.size()-1; k >= 0; k--) {
-					if (swapNewVM && swapCurrVM)	{
+					if (swapToNewVM && swapToCurrVM)	{
 						temp.setGenes(genes);
 						k = 0;
 					}
-					else if (!swapNewVM && genes.get(k) == currVM)	{
+					else if (!swapToNewVM && genes.get(k) == currVM)	{
 						genes.set(k, newVM);
-						swapNewVM = true;
+						swapToNewVM = true;
 					}
-					else if (!swapCurrVM && genes.get(k) == newVM)	{
+					else if (!swapToCurrVM && genes.get(k) == newVM)	{
 						genes.set(k, currVM);
-						swapCurrVM = true;
+						swapToCurrVM = true;
 					}
 				}
 			}
@@ -84,47 +99,6 @@ public class Helpers {
 		return new Chromosome(ret);
 	}
 	
-	public static double[][] randomizeData(int cloudlets, int vms, double u, double vtask, double vmach, boolean LH)	{
-		
-		double[][] etc = new double[cloudlets][vms];
-		double atask = 1.0 / (Math.pow(vtask, 2));
-		double amach = 1.0 / (Math.pow(vmach, 2));
-		
-		if (!LH)	{
-			double btask = u / atask;
-			
-			GammaDistribution gammaT = new GammaDistribution(atask, btask);
-			GammaDistribution gammaM;
-			double qi, bmach;
-			for (int i = 0; i < cloudlets; i++)	{
-				qi = gammaT.sample();
-				bmach = qi / amach;
-				
-				gammaM = new GammaDistribution(amach, bmach);
-				for (int j = 0; j < vms; j++) {
-					etc[i][j] = gammaM.sample();
-				}
-			}
-		} else	{
-			double bmach = u / amach;
-			
-			GammaDistribution gammaT = new GammaDistribution(amach, bmach);
-			GammaDistribution gammaM;
-			double pj, btask;
-			for (int i = 0; i < cloudlets; i++)	{
-				pj = gammaT.sample();
-				btask = pj / atask;
-				
-				gammaM = new GammaDistribution(atask, btask);
-				for (int j = 0; j < vms; j++) {
-					etc[j][i] = gammaM.sample();
-				}
-			}
-		}
-		
-		return etc;
-	}
-	
 	public static Chromosome mutation(Chromosome chrom)	{
 		List<Integer> genes = chrom.getCopyOfGenes();
 		int randCloudlet = (int)(Math.random() * genes.size());
@@ -139,12 +113,12 @@ public class Helpers {
 	
 	public static Chromosome crossover(Chromosome c1, Chromosome c2)	{
 		List<Integer> genes = new ArrayList<Integer>();
-		double rand;
 		List<Integer> c1Genes = c1.getCopyOfGenes();
 		List<Integer> c2Genes = c2.getCopyOfGenes();
+		double rand;
 		for (int i = 0; i < c1Genes.size(); i++)	{
 			rand = Math.random();
-			if (rand < 0.7)
+			if (rand < 0.40)
 				genes.add(c1Genes.get(i));
 			else
 				genes.add(c2Genes.get(i));
@@ -160,7 +134,7 @@ public class Helpers {
 		double z = 2 * (SP - 1);
 		return 2 - SP + (y * z);
 	}
-	
+
 	public static Chromosome myNSA(Chromosome chrom, int maxIter)	{
 		Chromosome test;
 		Chromosome ret = new Chromosome(chrom);
@@ -171,10 +145,9 @@ public class Helpers {
 		boolean success = false;
 		
 		while (!vmsByProcessTimeQ.isEmpty() && iter < maxIter)	{
-			// this is so good is it real? talk to almalag & alghannami ab it
 			
 			test = new Chromosome(ret);
-			if (success) // fitness changed, therefore processtimes changed. find potential new underloaded vms
+			if (success) 
 				vmsByProcessTimeQ = test.getUnderLoads();
 			success = false;
 			heaviestVM = test.getLargestLoadLoc();
@@ -200,10 +173,11 @@ public class Helpers {
 	}
 	
 	public static void printETC(double[][] etc)	{
+		DecimalFormat format = new DecimalFormat("##.##");
 		for (int i = 0; i < etc.length; i++)	{
 			System.out.print(i + "\t");
 			for (int j = 0; j < etc[i].length; j++)	{
-				System.out.print(etc[i][j] + "\t");
+				System.out.print(format.format(etc[i][j]) + "\t");
 			}
 			System.out.println();
 		}

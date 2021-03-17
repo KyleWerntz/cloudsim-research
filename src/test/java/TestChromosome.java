@@ -69,6 +69,17 @@ public class TestChromosome {
 		assertTrue(listEquals(expectedGenes, actualGenes));
 		assertTrue(listEquals(expectedLoad, actualLoad));
 		assertEquals(expectedFitness, actualFitness);
+		
+		expectedLoad = new ArrayList<Double>(Arrays.asList(10.0, 0.0, 0.0, 0.0, 3.0));
+		expectedFitness = 10.0;
+		chrom.updateLoad(2, 0);
+		actualGenes = chrom.getGenesForComparisonOnly();
+		actualLoad = chrom.getLoadForComparisonOnly();
+		actualFitness = chrom.getFitness();
+		
+		assertTrue(listEquals(genes, actualGenes));
+		assertTrue(listEquals(expectedLoad, actualLoad));
+		assertEquals(expectedFitness, actualFitness);
 	}
 	
 	

@@ -12,7 +12,6 @@ public class Particle implements Comparable<Particle>{
 		velocity = new double[etc.length][etc[0].length];
 		initializeParticle();
 		calculateFitness();
-		pBest = copyParticle(particle);
 	}
 	
 	public Particle(double[][] etc, int[][] solution)	{
@@ -26,6 +25,10 @@ public class Particle implements Comparable<Particle>{
 	
 	public double getFitness()	{
 		return fitness;
+	}
+	
+	public int[][] getPBest()	{
+		return pBest;
 	}
 	
 	public void initializeParticle()	{
@@ -60,16 +63,21 @@ public class Particle implements Comparable<Particle>{
 		return ret;
 	}
 	
-	public void calculateFitness()	{
-		fitness = 0;
+	public double getFitness(int[][] p)	{
+		double fit = 0;
 		double colFit;
 		for (int j = 0; j < particle[0].length; j++)	{
 			colFit = 0;
 			for (int i = 0; i < particle.length; i++)	{
 				colFit += etc[i][j] * particle[i][j];
 			}
-			fitness = Math.max(fitness, colFit);
+			fit = Math.max(fit, colFit);
 		}
+		return fit;
+	}
+	
+	public void calculateFitness()	{
+		fitness = getFitness(particle);
 	}
 	
 	public void getVelocityMaxes()	{
@@ -83,10 +91,12 @@ public class Particle implements Comparable<Particle>{
 		System.out.println();
 	}
 	
+	public void checkPBest()	{
+		
+	}
+	
 	public void updateVelocity(double w, double c1, double c2)	{
 		double a, b, c, r1, r2;
-//		double vMax = 50;
-//		double vMin = -50;
 		
 		for (int i = 0; i < velocity.length; i++)	{
 			for (int j = 0; j < velocity[i].length; j++)	{
@@ -98,10 +108,6 @@ public class Particle implements Comparable<Particle>{
 				c = (gBest[i][j] - particle[i][j]) * c2 * r2 ;
 				
 				velocity[i][j] = a + b + c;
-//				if (velocity[i][j] > vMax)
-//					velocity[i][j] = vMax;
-//				if (velocity[i][j] < vMin)
-//					velocity[i][j] = vMin;
 			}
 		}
 	}
@@ -111,6 +117,7 @@ public class Particle implements Comparable<Particle>{
 		int jMax = 0;
 		for (int i = 0; i < particle.length; i++) {
 			max = velocity[i][0];
+			jMax = 0;
 			for (int j = 0; j < particle[i].length; j++) {
 				particle[i][j] = 0;
 				if (velocity[i][j] > max)	{
@@ -121,6 +128,14 @@ public class Particle implements Comparable<Particle>{
 			particle[i][jMax] = 1;
 		}
 		calculateFitness();
+		updatePBest();
+	}
+	
+	public void updatePBest()	{
+		double pBestFit = getFitness(pBest);
+		if (pBestFit > fitness)	{
+			pBest = copyParticle(particle);
+		}
 	}
 	
 	public void printStats()	{
@@ -141,5 +156,15 @@ public class Particle implements Comparable<Particle>{
 		if (fitness < other.getFitness())
 			return -1;
 		return 0;
+	}
+	
+	public void printParticle(int[][] particle)	{
+		for (int i = 0; i < particle.length; i++)	{
+			System.out.print(i + " ");
+			for (int j = 0; j < particle[i].length; j++)	{
+				System.out.print(particle[i][j] + " ");
+			}
+			System.out.println();
+		}
 	}
 }

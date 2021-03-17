@@ -19,7 +19,8 @@ public class Driver {
 		
 		int numVMs = 8;
 		int numCloudlets = 1024;
-		String[] heterogenityTypes = {"LOLO", "LOHI", "HILO","HIHI"}; 
+//		String[] heterogenityTypes = {"LOLO", "HIHI_new"}; 
+		String[] heterogenityTypes = {"HiHi_ETC", "LoLo_ETC"};
 		boolean[] minminSet = {true, false}; 
 		String str;
 		File txt;
@@ -35,20 +36,22 @@ public class Driver {
 		double percentDone, percentDoneTotal;
 		int population = 200;
 		
-//		solutions.add(new BumbleBeeSolution("bumble w/ PATH_RELINK NSA", bumbleCrossoverSize, PATH_RELINK, MY_NSA, etc));
-//		solutions.add(new BumbleBeeSolution("bumble w/ PATH_RELINK VND", bumbleCrossoverSize, PATH_RELINK, VND, etc));
-//		solutions.add(new BumbleBeeSolution("bumble w/ VND VND", bumbleCrossoverSize, VND, VND, etc));
+		solutions.add(new BumbleBeeSolution("bumble w/ PATH_RELINK NSA", bumbleCrossoverSize, PATH_RELINK, MY_NSA, etc));
+		solutions.add(new BumbleBeeSolution("bumble w/ PATH_RELINK VND", bumbleCrossoverSize, PATH_RELINK, VND, etc));
+		solutions.add(new BumbleBeeSolution("bumble w/ VND VND", bumbleCrossoverSize, VND, VND, etc));
 //		solutions.add(new ArtificialBeeSolution("abc", nsp, nep, etc));
 //		solutions.add(new HoneybeeSolution("honey", etc));
 //		solutions.add(new GeneticFastSolution("genetic w/ little crossover and roulette wheel", etc));
-//		solutions.add(new GeneticSlowSolution("genetic w/ large crossover and binary search 200 pop", etc));
-		solutions.add(new RandomGenerationSolution("average random solution over 10k iterations", etc));
-//		solutions.add(new ParticleSwarmSolution("pso", 50, etc));
+//		solutions.add(new GeneticSlowSolution("genetic w/ large crossover and binary search", etc));
+//		solutions.add(new RandomGenerationSolution("random solution over 10k iterations", etc));
+//		solutions.add(new ParticleSwarmSolution("pso", population, etc));
+//		solutions.add(new AverageSolution("average inital solution over 10k iterations", etc));
 //		solutions.add(new ShortestTimeToCompletionSolution("stcs", etc));
-		solutions.add(new MinMinSolution("minmin solution", etc));
+//		solutions.add(new MinMinSolution("minmin solution", etc));
 		
 		boolean storeSolutions = true;
-		int iter = 5;
+		int etcs = 50;
+		int iter = 2;
 		try {
 			FileWriter print = null;
 			System.out.println("starting!");
@@ -57,7 +60,7 @@ public class Driver {
 			
 			LocalDateTime time = LocalDateTime.now();
 			DateTimeFormatter formattedTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-			String timeObtained = "data obtained at " + time.format(formattedTime) + "\n\n";
+			String timeObtained = "data obtained at " + time.format(formattedTime);
 			
 			for (int i = 0; i < heterogenityTypes.length; i++)	{
 				String fileName = "txt-files/" + heterogenityTypes[i] + "/etc" + heterogenityTypes[i];
@@ -72,9 +75,9 @@ public class Driver {
 					}
 					
 					for (int k = 0; k < iter; k++)	{
-						str = fileName + Integer.toString(k+1) + ".txt";
+						str = fileName + Integer.toString((k%etcs)+1) + ".txt";
 						txt = new File(str);
-						etc = getETC(txt, numCloudlets, numVMs);
+						etc = Helpers.getETC(txt, numCloudlets, numVMs);
 						
 						for (Solution s : solutions)	{
 							s.setETC(etc);
@@ -110,24 +113,6 @@ public class Driver {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private static double[][] getETC(File txt, int cloudlets, int vms)	{
-		Scanner scnr;
-		double[][] etc = new double[cloudlets][vms];
-		
-		try	{
-			scnr = new Scanner(txt);
-			for(int i = 0; i < etc.length; i++)
-				for(int j = 0; j < etc[i].length; j++)
-					etc[i][j] = scnr.nextDouble();
-			scnr.close();
-		} catch(FileNotFoundException e)	{
-			System.out.println("file not found");
-			e.printStackTrace();
-		}
-		
-		return etc;
 	}
 	
 }

@@ -28,10 +28,11 @@ public class ArtificialBeeSolution extends Solution {
 		Collections.sort(population);
 		double startFit = population.get(0).getFitness();
 		double ogFitness = population.get(0).getFitness();
-		double bestFitness = 0;
+		double bestFitness = population.get(0).getFitness();
 		int iter = 0;
 		boolean keepRunning = true;
-		List<Chromosome> nspFindings = new ArrayList<Chromosome>();
+		long end = System.currentTimeMillis() + (120*1000); // 2 min
+//		while (System.currentTimeMillis() < end)	{
 		while (keepRunning)	{
 			
 			// employed bee phase is done already because fitness is ranked
@@ -41,37 +42,26 @@ public class ArtificialBeeSolution extends Solution {
 			
 			// onlooker bee
 			for (int i = 0; i < nsp; i++)	{
-				Chromosome chrom = Helpers.mutation(population.get(i % population.size()));
-				
-				//added this to speed up. OG paper doesnt include the if statement, just adds to lists
-				if (chrom.getFitness() < population.get(bees-1).getFitness())	{
-					nspFindings.add(chrom);
-					population.add(chrom);
-				}
+				Chromosome chrom = Helpers.mutation(population.get(0));
+				population.add(chrom);
 			}
 			for (int i = 0; i < nep; i++)	{
-				Chromosome chrom = Helpers.mutation(nspFindings.get(i % nspFindings.size()));
-//				
-//				//added this to speed up. OG paper doesnt include the if statement, just adds to lists
-				if (chrom.getFitness() < population.get(bees-1).getFitness())	{
-					population.add(chrom);
-				}
-				
-//				population.add(chrom);
-
+				Chromosome chrom = Helpers.mutation(population.get(i % population.size()));
+				population.add(chrom);
 			}
 			Collections.sort(population);
-			population = population.subList(0, bees);
+			bestFitness = Math.min(bestFitness, population.get(0).getFitness());
+			Chromosome best = population.get(0);
+			population.clear();
+			population.add(best);
 			
 			// scout bee
 			for (int i = 0; i < bees; i++)	{
 				population.add(new Chromosome(this.getETC()));
 			}
 			Collections.sort(population);
-			
 			iter++;
 			if (iter > 50)	{
-				bestFitness = population.get(0).getFitness();
 				if (ogFitness / bestFitness < 1.05)	{
 					keepRunning = false;
 				}
