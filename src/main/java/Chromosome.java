@@ -23,8 +23,8 @@ public class Chromosome	implements Comparable<Chromosome>{
 			this.etc = etc;
 			this.cloudlets = etc.length;
 			this.vms = etc[0].length;
-			genes = new ArrayList<Integer>();
-			load = new ArrayList<Double>();
+			genes = new ArrayList<>();
+			load = new ArrayList<>();
 			generateGenes();
 		}
 		
@@ -37,7 +37,7 @@ public class Chromosome	implements Comparable<Chromosome>{
 			this.etc = etc;
 			this.cloudlets = etc.length;
 			this.vms = etc[0].length;
-			load = new ArrayList<Double>();
+			load = new ArrayList<>();
 			setGenes(genes);
 		}
 		
@@ -95,7 +95,7 @@ public class Chromosome	implements Comparable<Chromosome>{
 		 * @return a deep copy of the genes
 		 */
 		public List<Integer> getCopyOfGenes()	{
-			List<Integer> genesCopy = new ArrayList<Integer>();
+			List<Integer> genesCopy = new ArrayList<>();
 			for (Integer i : genes)
 				genesCopy.add(i);
 			return genesCopy;
@@ -106,7 +106,7 @@ public class Chromosome	implements Comparable<Chromosome>{
 		 * @return a deep copy of the load
 		 */
 		public List<Double> getCopyOfLoad()	{
-			List<Double> loadCopy = new ArrayList<Double>();
+			List<Double> loadCopy = new ArrayList<>();
 			for (Double d : load)
 				loadCopy.add(d);
 			return loadCopy;
@@ -327,8 +327,8 @@ public class Chromosome	implements Comparable<Chromosome>{
 		 * @return a list of cloudlet ids pertaining to the cloudlets on the vm
 		 */
 		public List<Integer> getTasksOnVMByTime(int vm)	{
-			List<SortHelp> sort = new ArrayList<SortHelp>();
-			List<Integer> tasks = new ArrayList<Integer>();
+			List<SortHelp> sort = new ArrayList<>();
+			List<Integer> tasks = new ArrayList<>();
 			for (int i = 0; i < genes.size(); i++)	{
 				if (genes.get(i) == vm)
 					sort.add(new SortHelp(i, etc[i][vm]));
@@ -356,7 +356,7 @@ public class Chromosome	implements Comparable<Chromosome>{
 		 * recalculates the load of each vm
 		 */
 		public void calculateLoad()	{
-			if (load.size() > 0)
+			if (!load.isEmpty())
 				for (int i = 0; i < vms; i++)
 					load.set(i, 0.0);
 			else 

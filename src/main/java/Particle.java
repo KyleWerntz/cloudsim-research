@@ -66,10 +66,10 @@ public class Particle implements Comparable<Particle>{
 	public double getFitness(int[][] p)	{
 		double fit = 0;
 		double colFit;
-		for (int j = 0; j < particle[0].length; j++)	{
+		for (int j = 0; j < p[0].length; j++)	{
 			colFit = 0;
-			for (int i = 0; i < particle.length; i++)	{
-				colFit += etc[i][j] * particle[i][j];
+			for (int i = 0; i < p.length; i++)	{
+				colFit += etc[i][j] * p[i][j];
 			}
 			fit = Math.max(fit, colFit);
 		}
@@ -89,10 +89,6 @@ public class Particle implements Comparable<Particle>{
 			System.out.print(max + " ");
 		}
 		System.out.println();
-	}
-	
-	public void checkPBest()	{
-		
 	}
 	
 	public void updateVelocity(double w, double c1, double c2)	{

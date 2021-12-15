@@ -10,7 +10,7 @@ public class GeneticFastSolution extends Solution	{
 	
 	public void runDataSet(int pop, boolean minmin)	{
 		ExecutionTimeMeasurer.start("genetic");
-		List<Chromosome> oldGeneration = new ArrayList<Chromosome>();
+		List<Chromosome> oldGeneration = new ArrayList<>();
 		if (minmin)
 			oldGeneration.add(new Chromosome(getETC(), Helpers.minmin(getETC())));
 		for (int i = 0; i < pop-1; i++)	{
@@ -26,7 +26,7 @@ public class GeneticFastSolution extends Solution	{
 		boolean keepRunning = true;
 		while (keepRunning)	{
 			
-			List<Chromosome> newGeneration = new ArrayList<Chromosome>();
+			List<Chromosome> newGeneration = new ArrayList<>();
 			newGeneration.add(oldGeneration.get(0));
 			
 			newGeneration = selection(pop, newGeneration, oldGeneration);
@@ -37,8 +37,8 @@ public class GeneticFastSolution extends Solution	{
 			oldGeneration = newGeneration;
 			iter++;
 			bestFitness = oldGeneration.get(0).getFitness();
-			if (iter == 50)	{
-				if (ogFitness / bestFitness < 1.05)
+			if (iter == getMinIterations())	{
+				if (ogFitness / bestFitness < getImprovementThreshold())
 					keepRunning = false;
 				else	{
 					iter = 0;

@@ -9,7 +9,7 @@ public class GeneticSlowSolution extends Solution {
 	
 	public void runDataSet(int pop, boolean minmin)	{
 		ExecutionTimeMeasurer.start("genetic");
-		List<Chromosome> population = new ArrayList<Chromosome>();
+		List<Chromosome> population = new ArrayList<>();
 		if (minmin)
 			population.add(new Chromosome(getETC(), Helpers.minmin(getETC())));
 		for (int i = 0; i < pop-1; i++)	{
@@ -34,7 +34,6 @@ public class GeneticSlowSolution extends Solution {
 			//mutation
 			double prob;
 			for (int j = 0; j < population.size(); j++) {
-//				System.out.println(j);
 				prob = Math.random();
 				if (prob <= 0.03)
 					population.set(j, mutate(population.get(j)));
@@ -45,8 +44,8 @@ public class GeneticSlowSolution extends Solution {
 			
 			iter++;
 			bestFitness = population.get(0).getFitness();
-			if (iter == 50)	{
-				if (ogFitness / bestFitness < 1.05)
+			if (iter == getMinIterations())	{
+				if (ogFitness / bestFitness < getImprovementThreshold())
 					keepRunning = false;
 				else	{
 					iter = 0;
@@ -85,8 +84,8 @@ public class GeneticSlowSolution extends Solution {
 	}
 	
 	private static List<Chromosome> selection(List<Chromosome> population)	{
-		List<Chromosome> generation = new ArrayList<Chromosome>();
-		List<Double> probs = new ArrayList<Double>();
+		List<Chromosome> generation = new ArrayList<>();
+		List<Double> probs = new ArrayList<>();
 		double sumfRanks = 0;
 		Chromosome chrom;
 		for (int i = 0; i < population.size(); i++) {

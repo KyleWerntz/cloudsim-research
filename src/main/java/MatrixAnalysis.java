@@ -65,7 +65,7 @@ public class MatrixAnalysis {
 				mean += etc[i][j];
 			}
 		}
-		return mean /= (etc.length * etc[0].length);
+		return mean / (etc.length * etc[0].length);
 	}
 	
 	private static double getStandardDeviation(double mean, double[][] etc)	{
@@ -90,7 +90,6 @@ public class MatrixAnalysis {
 					etc[i][j] = scnr.nextDouble();
 			scnr.close();
 		} catch(FileNotFoundException e)	{
-			System.out.println("file not found");
 			e.printStackTrace();
 		}
 		

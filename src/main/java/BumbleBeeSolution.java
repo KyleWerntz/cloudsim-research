@@ -25,10 +25,10 @@ public class BumbleBeeSolution extends Solution {
 		double droneByWorker = 0.6 * maxDrones;
 		
 		// Initalization
-		List<Chromosome> population = new ArrayList<Chromosome>();
-		List<Queen> queens = new ArrayList<Queen>();
-		List<Chromosome> workers = new ArrayList<Chromosome>();
-		List<Chromosome> drones = new ArrayList<Chromosome>();
+		List<Chromosome> population = new ArrayList<>();
+		List<Queen> queens = new ArrayList<>();
+		List<Chromosome> workers = new ArrayList<>();
+		List<Chromosome> drones = new ArrayList<>();
 		for (int i = 0; i < pop; i++)	{
 			population.add(new Chromosome(getETC()));
 		}
@@ -50,8 +50,6 @@ public class BumbleBeeSolution extends Solution {
 		Queen bestOldQueen = queens.get(0);
 		double ogFitness = bestOldQueen.getFitness();
 		boolean keepRunning = true;
-		long end = System.currentTimeMillis() + (120*1000); // 2 min
-//		while (System.currentTimeMillis() < end)	{
 		while (keepRunning)	{
 			ExecutionTimeMeasurer.start("one_run");
 				
@@ -78,9 +76,9 @@ public class BumbleBeeSolution extends Solution {
 				queens.remove(0);
 			}
 			
-			List<Double> oldFitnesses = new ArrayList<Double>();
+			List<Double> oldFitnesses = new ArrayList<>();
 			for (int i = 0; i < queens.size(); i++)	{
-				if (localSearchOption == 1)	{
+				if (localSearchOption == 1)	{ // path relink
 					oldFitnesses.add(queens.get(i).getFitness());
 					queens.set(i, pathRelink(queens.get(i), bestOldQueen));
 					
@@ -96,7 +94,7 @@ public class BumbleBeeSolution extends Solution {
 						}
 					}
 					queens.set(i, pathRelink(queens.get(i), workers.get(farthestWorkerLoc)));
-				} else if (localSearchOption == 2)	{
+				} else if (localSearchOption == 2)	{ // VND
 					Chromosome temp = new Chromosome(getETC(), queens.get(i).getCopyOfGenes());
 					temp = Helpers.VND(temp);
 					queens.get(i).setGenes(temp.getCopyOfGenes());
@@ -113,18 +111,18 @@ public class BumbleBeeSolution extends Solution {
 			}
 			
 			switch (this.droneImprovementOption) {
-			case 1:
+			case 1: // myNSA
 				for (int i = 0; i < drones.size(); i++)	{
 					drones.set(i, Helpers.myNSA(drones.get(i), 1000));
 				}
 				break;
-			case 3:
+			case 3: // tabuSearch (not recommended; brute force)
 				int j = (int)(Math.random() * drones.size());
 				drones.set(j, tabuSearch(drones.get(j), 3));
 				j = (int)(Math.random() * drones.size());
 				drones.set(j, tabuSearch(drones.get(j), 3));
 				break;
-			case 2:
+			case 2: // VND
 				for (int i = 0; i < drones.size(); i++)	{
 					drones.set(i, Helpers.VND(drones.get(i)));
 				}
@@ -143,28 +141,18 @@ public class BumbleBeeSolution extends Solution {
 			population.clear();
 			drones.clear();
 			iter++;
-//			System.out.println(iter);
-			if (iter == 50)	{
-				if (ogFitness / bestOldQueen.getFitness() < 1.05)
+			
+			if (iter == getMinIterations())	{
+				if (ogFitness / bestOldQueen.getFitness() < getImprovementThreshold())
 					keepRunning = false;
 				else	{
 					iter = 0;
 					ogFitness = bestOldQueen.getFitness();
 				}
 			}
-			
-			// changing stop conditions to this in HIHI only improves solution by ab 400... nowhere near the 2.8k it needs to improve to get to ~800
-//			if (iter == 1000)
-//				keepRunning = false;
 		}
 	
 		bestOldQueen.calculateLoad();
-		List<Double> loads = bestOldQueen.getCopyOfLoad();
-		for (double d : loads)	{
-			System.out.print(d + "\t");
-		}
-		System.out.println();
-//		bestOldQueen.printFitnessStats();
 		double endFit = bestOldQueen.getFitness();
 		this.addImprovement(startFit, endFit);
 		this.addRun(bestOldQueen.getFitness(), ExecutionTimeMeasurer.end("bumble"));

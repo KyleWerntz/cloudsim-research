@@ -10,7 +10,7 @@ public class HoneybeeSolution extends Solution {
 	public void runDataSet(int spermathecaS, boolean minmin)	{
 		ExecutionTimeMeasurer.start("honeybee");
 		int spermathecaSize = spermathecaS;
-		List<Chromosome> spermatheca = new ArrayList<Chromosome>();
+		List<Chromosome> spermatheca = new ArrayList<>();
 		int currSperm = 0;
 		double alpha = 0.9;
 		double beta;
@@ -21,8 +21,6 @@ public class HoneybeeSolution extends Solution {
 		else
 			queen = new Chromosome(getETC());
 		
-//		System.out.println("starting solution=" + queen.getFitness());
-//		queen = Helpers.myNSA(queen, 1000);
 		queen = Helpers.VND(queen);
 		
 		int iter = 0;
@@ -30,8 +28,6 @@ public class HoneybeeSolution extends Solution {
 		double ogFitness = queen.getFitness();
 		double bestFitness = queen.getFitness();
 		boolean keepRunning = true;
-		long end = System.currentTimeMillis() + (120*1000); // 2 min
-//		while (System.currentTimeMillis() < end)	{
 		while (keepRunning)	{
 			
 			beta = Math.random();
@@ -52,7 +48,7 @@ public class HoneybeeSolution extends Solution {
 				queenSpeed = updateSpeed(queenSpeed, alpha);
 			} 
 			
-			List<Chromosome> broods = new ArrayList<Chromosome>();
+			List<Chromosome> broods = new ArrayList<>();
 			for (int i = 0; i < spermatheca.size(); i++)	{
 				Chromosome brood = new Chromosome(getETC(), generateBrood(queen.getGenesForComparisonOnly(), spermatheca.get(i).getCopyOfGenes()));
 				brood = Helpers.VND(brood);
@@ -60,7 +56,7 @@ public class HoneybeeSolution extends Solution {
 			}
 
 			Collections.sort(broods);
-			if (broods.size() > 0 && broods.get(0).getFitness() < queen.getFitness())	{
+			if (!broods.isEmpty() && broods.get(0).getFitness() < queen.getFitness())	{
 				queen.setGenes(broods.get(0).getCopyOfGenes());
 			}
 			
@@ -96,7 +92,7 @@ public class HoneybeeSolution extends Solution {
 	
 	private static List<Integer> generateBrood(List<Integer> queen, List<Integer> drone)	{
 		
-		List<Integer> brood = new ArrayList<Integer>();
+		List<Integer> brood = new ArrayList<>();
 		boolean[] marker = new boolean[queen.size()];
 		int loc;
 		for (int i = 0; i < marker.length/2; i++)	{

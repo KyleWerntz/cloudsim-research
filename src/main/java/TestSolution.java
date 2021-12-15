@@ -3,6 +3,12 @@ import java.util.List;
 public class TestSolution extends Solution{
 	private int maxIter;
 	
+	/**
+	 * A solution to test some combination of algorithms
+	 * @param name name of the solution
+	 * @param maxIter max iterations to run
+	 * @param etc etc to operate on
+	 */
 	public TestSolution(String name, int maxIter, double[][] etc) {
 		super(name, etc);
 		this.maxIter = maxIter;

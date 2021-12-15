@@ -4,6 +4,9 @@ import java.util.List;
 public abstract class Solution {
 
 	private String name;
+	private int minIterations;
+	private double improvementThreshold;
+	
 	private double bestMakespan;
 	private double sumTime;
 	private double sumMakespan;
@@ -15,7 +18,14 @@ public abstract class Solution {
 	private double sumImprovement;
 	
 	public Solution(String name, double[][] etc)	{
+		this(name, etc, 50, 1.05);
+	}
+	
+	public Solution(String name, double[][] etc, int minIterations, double improvementThreshold) {
 		this.name = name;
+		this.minIterations = minIterations;
+		this.improvementThreshold = improvementThreshold;
+		
 		bestMakespan = 0;
 		sumTime = 0;
 		sumMakespan = 0;
@@ -23,8 +33,24 @@ public abstract class Solution {
 		stdDev = 0;
 		avgMS = 0;
 		sumImprovement = 0;
-		indMakespans = new ArrayList<Double>();
+		indMakespans = new ArrayList<>();
 		this.etc = etc;
+	}
+	
+	public int getMinIterations() {
+		return minIterations;
+	}
+	
+	public void setMinIterations(int minIterations) {
+		this.minIterations = minIterations;
+	}
+	
+	public double getImprovementThreshold() {
+		return improvementThreshold;
+	}
+	
+	public void setImprovementThreshold(double improvementThreshold) {
+		this.improvementThreshold = improvementThreshold;
 	}
 	
 	public double[][] getETC()	{

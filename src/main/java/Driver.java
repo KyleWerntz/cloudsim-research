@@ -1,30 +1,22 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Driver {
 	
-	private static double[][] etc;
-	
-	/**
-	 * Creates main() to run this example
-	 */
 	public static void main(String[] args) {
 		
 		int numVMs = 8;
 		int numCloudlets = 1024;
-//		String[] heterogenityTypes = {"LOLO", "HIHI_new"}; 
 		String[] heterogenityTypes = {"HiHi_ETC", "LoLo_ETC"};
 		boolean[] minminSet = {true, false}; 
 		String str;
 		File txt;
-		etc = new double[numCloudlets][numVMs];
+		double[][] etc = new double[numCloudlets][numVMs];
 		final int MY_NSA = 1;
 		final int PATH_RELINK = 1;
 		final int VND = 2;
@@ -32,7 +24,7 @@ public class Driver {
 		int bumbleCrossoverSize = 50;
 		int nep = 768;
 		int nsp = 192;
-		List<Solution> solutions = new ArrayList<Solution>();
+		List<Solution> solutions = new ArrayList<>();
 		double percentDone, percentDoneTotal;
 		int population = 200;
 		

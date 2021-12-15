@@ -16,7 +16,7 @@ public class ArtificialBeeSolution extends Solution {
 	
 	public void runDataSet(int bees, boolean minmin)	{
 		ExecutionTimeMeasurer.start("abc");
-		List<Chromosome> population = new ArrayList<Chromosome>();
+		List<Chromosome> population = new ArrayList<>();
 		if (minmin)
 			population.add(new Chromosome(this.getETC(), Helpers.minmin(this.getETC())));
 		else
@@ -31,8 +31,6 @@ public class ArtificialBeeSolution extends Solution {
 		double bestFitness = population.get(0).getFitness();
 		int iter = 0;
 		boolean keepRunning = true;
-		long end = System.currentTimeMillis() + (120*1000); // 2 min
-//		while (System.currentTimeMillis() < end)	{
 		while (keepRunning)	{
 			
 			// employed bee phase is done already because fitness is ranked
@@ -61,8 +59,8 @@ public class ArtificialBeeSolution extends Solution {
 			}
 			Collections.sort(population);
 			iter++;
-			if (iter > 50)	{
-				if (ogFitness / bestFitness < 1.05)	{
+			if (iter > getMinIterations())	{
+				if (ogFitness / bestFitness < getImprovementThreshold())	{
 					keepRunning = false;
 				}
 				else	{

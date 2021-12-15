@@ -13,7 +13,7 @@ public class ParticleSwarmSolution extends Solution {
 	@Override
 	public void runDataSet(int pop, boolean minmin) {
 		ExecutionTimeMeasurer.start("particle");
-		List<Particle> population = new ArrayList<Particle>();
+		List<Particle> population = new ArrayList<>();
 		double c1 = 2;
 		double c2 = 2;
 		double w = 0.65;
@@ -31,9 +31,7 @@ public class ParticleSwarmSolution extends Solution {
 		}
 		
 		int iter = 0;
-		long end = System.currentTimeMillis() + (120*1000); // 2 min
-		while (System.currentTimeMillis() < end)	{
-//		while (iter < maxIter)	{
+		while (iter < maxIter)	{
 			for (Particle p : population)	{
 				p.updateVelocity(w, c1, c2);
 				p.updatePosition();

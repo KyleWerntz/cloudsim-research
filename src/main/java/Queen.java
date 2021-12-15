@@ -10,7 +10,7 @@ public class Queen extends Chromosome {
 
 	public Queen(double[][] etc, List<Integer> genes) {
 		super(etc, genes);
-		spermatheca = new ArrayList<Chromosome>();
+		spermatheca = new ArrayList<>();
 	}
 	
 	public Queen(Queen q)	{
@@ -19,7 +19,7 @@ public class Queen extends Chromosome {
 	}
 	
 	public List<Chromosome> getCopyOfSpermatheca()	{
-		List<Chromosome> spermathecaCopy = new ArrayList<Chromosome>();
+		List<Chromosome> spermathecaCopy = new ArrayList<>();
 		for (Chromosome c : spermatheca)
 			spermathecaCopy.add(c);
 		return spermathecaCopy;
